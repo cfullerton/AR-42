@@ -1,0 +1,6 @@
+version: "Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)"
+options: "f9e92c7680246b919a37c975b6aebb74"
+build_time: [1626328294, 458256000]
+inputs:
+  "/Users/connerfullerton/Documents/AR 42/AR 42/AppDelegate.swift": [1626300445, 140008058]
+  "/Users/connerfullerton/Documents/AR 42/AR 42/ViewController.swift": [1626327139, 724701971]

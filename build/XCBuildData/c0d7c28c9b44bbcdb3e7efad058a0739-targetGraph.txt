@@ -1,0 +1,6 @@
+Target dependency graph (3 targets)
+AR 42 in AR 42
+AR 42Tests in AR 42, depends on:
+AR 42 in AR 42 (explicit)
+AR 42UITests in AR 42, depends on:
+AR 42 in AR 42 (explicit)
