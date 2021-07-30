@@ -166,7 +166,10 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var playerBid = 0
     var bid = 0
     var bidwinner = 0
+    var trump = 7
+    var startingPlayer = 0
     var bids: [[Int]] = []
+    var dominosLayed = 0
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
         var playerTrump = 7
         if playerBid == 0 {
@@ -300,9 +303,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 computerTrump = bestSuit[0]
             }
             if confidence > 100 {
+                // todo: what if someone already bid 42
                 computerBid = 42
             } else if confidence > 50 {
-                computerBid = bid + 1
+                if bid > 30 {
+                    computerBid = bid + 1
+                }else {
+                    bid = 30
+                }
             }else{
                 computerBid = 1
             }
@@ -325,6 +333,25 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     func startGame() {
         print(bid,bids)
-        
+        for bidItem in bids {
+            if bidItem[1] == bid {
+                trump = bidItem[2]
+                startingPlayer = bidItem[0]
+            }
+        }
+        playTurn(playerNumber:startingPlayer)
+    }
+    func playTurn(playerNumber:Int) {
+        // todo: add logic for a turn
+        dominosLayed += 1
+        if dominosLayed == 4 {
+            //score and remove domninos
+        }else {
+            if playerNumber == 3 {
+                playTurn(playerNumber: 0)
+            }else{
+                playTurn(playerNumber: playerNumber + 1)
+            }
+        }
     }
 }
