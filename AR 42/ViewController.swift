@@ -165,10 +165,10 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     // put these somewhere better, like in an object
     var playerBid = 0
     var bid = 0
-    var trumpSuit = 1
     var bidwinner = 0
     var bids: [[Int]] = []
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
+        var playerTrump = 7
         if playerBid == 0 {
             let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
             if bidText == "none"{
@@ -178,10 +178,10 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }else{
                 playerBid = Int(bidText) ?? 1
             }
-            bids.append([0,playerBid])
             bidChoices = ["1","2","3","4","5","6"]
             bidConfirm.setTitle("Select Trump", for: .normal)
             bidSelector.reloadAllComponents()
+            // todo: test case where user doesn't bid first
             if playerBid > bid {
                 bid = playerBid
             }else{
@@ -191,17 +191,24 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }else{
             if playerBid > bid {
                 let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
-                trumpSuit = Int(bidText) ?? 1
+                bid = playerBid
+                playerTrump = Int(bidText) ?? 1
+                print(playerTrump)
             }
+            bids.append([0,playerBid,playerTrump])
+            print(playerTrump)
+            print(bids)
            bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
+            if bids.count < 4 {
+                let newIndex = 1
+                decideBid(playerIndex: newIndex)
+            }else {
+                startGame()
+            }
             bidConfirm.setTitle("Place Bid", for: .normal)
             bidSelector.reloadAllComponents()
             bidSelector.isHidden = true
             bidConfirm.isHidden = true
-            if bids.count < 4 {
-                let newIndex = 1
-                decideBid(playerIndex: newIndex)
-            }
         }
         
     }
@@ -231,6 +238,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     func decideBid (playerIndex:Int){
+        print(playerIndex)
         if players[playerIndex].isUser {
             bidSelector.isHidden = false
             bidConfirm.isHidden = false
@@ -300,9 +308,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
             if computerBid > bid {
                 bid = computerBid
-                trumpSuit = computerTrump
             }
-            bids.append([playerIndex,computerBid])
+            bids.append([playerIndex,computerBid,computerTrump])
             if bids.count < 4 {
                 var newIndex = 0
                 if playerIndex == 3 {
@@ -311,8 +318,13 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     newIndex = playerIndex + 1
                 }
                 decideBid(playerIndex: newIndex)
+            }else{
+               startGame()
             }
         }
-        print(bid,trumpSuit,bids)
+    }
+    func startGame() {
+        print(bid,bids)
+        
     }
 }
