@@ -194,6 +194,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
+        print(sender)
         let tapLocation = sender.location(in: arView)
         print(tapLocation)
         if let playedDominoModel = arView.entity(at: tapLocation){
