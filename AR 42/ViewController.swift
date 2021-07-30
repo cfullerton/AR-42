@@ -127,6 +127,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     player.holdingDominos.append(j)
                 }
                 player.name = "user"
+                players.append(player)
             } else if i == 1 {
                 var player = Player()
                 player.isUser = false
@@ -134,6 +135,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     player.holdingDominos.append(j)
                 }
                 player.name = "left"
+                players.append(player)
             } else if i == 2 {
                 var player = Player()
                 player.isUser = false
@@ -141,6 +143,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     player.holdingDominos.append(j)
                 }
                 player.name = "across"
+                players.append(player)
             } else if i == 3 {
                 var player = Player()
                 player.isUser = false
@@ -148,20 +151,23 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     player.holdingDominos.append(j)
                 }
                 player.name = "right"
+                players.append(player)
             }
+            
         }
         
-        // add bid rotating instead of always starting with player
-        for player in players {
-            decideBid(player:player)
-        }
+        
+        
+        decideBid(playerIndex:0)
         bidSelector.delegate = self
         bidSelector.dataSource = self
     } // end view load
-    
+    // put these somewhere better, like in an object
     var playerBid = 0
     var bid = 0
     var trumpSuit = 1
+    var bidwinner = 0
+    var bids: [[Int]] = []
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
         if playerBid == 0 {
             let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
@@ -172,6 +178,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }else{
                 playerBid = Int(bidText) ?? 1
             }
+            bids.append([0,playerBid])
             bidChoices = ["1","2","3","4","5","6"]
             bidConfirm.setTitle("Select Trump", for: .normal)
             bidSelector.reloadAllComponents()
@@ -191,10 +198,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             bidSelector.reloadAllComponents()
             bidSelector.isHidden = true
             bidConfirm.isHidden = true
+            if bids.count < 4 {
+                let newIndex = 1
+                decideBid(playerIndex: newIndex)
+            }
         }
+        
     }
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
-        print(sender)
         let tapLocation = sender.location(in: arView)
         print(tapLocation)
         if let playedDominoModel = arView.entity(at: tapLocation){
@@ -219,13 +230,89 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
         }
     }
-    func decideBid (player:Player){
-        print(player)
-        if player.isUser {
+    func decideBid (playerIndex:Int){
+        if players[playerIndex].isUser {
             bidSelector.isHidden = false
             bidConfirm.isHidden = false
+        } else{
+            var computerTrump = 7 // no trump
+            var computerBid = 0
+            var confidence = 0
+            var doubles: [Int] = []
+            var suitCount: [[Int]] = []
+            for i in 0...6 {
+                suitCount.append([i,0])
+            }
+            for dominoIndex in players[playerIndex].holdingDominos{
+                let dominoValues = dominos[dominoIndex].name.split(separator: "_").compactMap { Int($0) }
+                if dominoValues[0] == dominoValues[1] {
+                    doubles.append(dominoValues[0])
+                }
+                for i in 0...6 {
+                    if dominoValues.contains(suitCount[i][0]) {
+                        suitCount[i][1] += 1
+                    }
+                }
+            }
+            var bestSuit = [0,0]
+            var bestSuitCount = 0
+            for suit in suitCount {
+                if suit[1] > bestSuitCount {
+                    bestSuit = suit
+                    bestSuitCount = suit[1]
+                }
+            }
+            if doubles.contains(bestSuit[0]) { // if they have the double of their best
+                confidence += 20
+            }
+            if bestSuitCount > 3 { // if they have at least 4 of the same suit
+                confidence += 20
+            }
+            if bestSuit[0] > 3 { // if it is a a high suit
+                confidence += 10
+            }
+            if bestSuit[1] + doubles.count > 5 { // they only have one off domino
+                confidence += 30
+            }
+            if doubles.contains(6){
+                confidence += 10
+            }
+            if doubles.contains(5) {
+                confidence += 10
+            }
+            if doubles.count > 4 { // 4 doubles
+                confidence += 30
+            }
+            if doubles.count > 6 { // all doubles
+                confidence += 100
+                computerTrump = 7
+            } else if doubles.count > 4 && bestSuit[1] < 4 {
+                    computerTrump = 7
+            } else {
+                computerTrump = bestSuit[0]
+            }
+            if confidence > 100 {
+                computerBid = 42
+            } else if confidence > 50 {
+                computerBid = bid + 1
+            }else{
+                computerBid = 1
+            }
+            if computerBid > bid {
+                bid = computerBid
+                trumpSuit = computerTrump
+            }
+            bids.append([playerIndex,computerBid])
+            if bids.count < 4 {
+                var newIndex = 0
+                if playerIndex == 3 {
+                    newIndex = 0
+                }else {
+                    newIndex = playerIndex + 1
+                }
+                decideBid(playerIndex: newIndex)
+            }
         }
-        // add logic for computer bidding
-        print(player.holdingDominos)
+        print(bid,trumpSuit,bids)
     }
 }
