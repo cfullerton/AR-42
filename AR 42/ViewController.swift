@@ -24,9 +24,22 @@ class Player {
 }
 
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+    @IBOutlet var bidConfirm: UIButton!
+    var bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return bidChoices.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return bidChoices[row]
+    }
     var dominos : [Domino] = []
     @IBOutlet var arView: ARView!
+    @IBOutlet var bidSelector: UIPickerView!
     var dominoModels: [Entity] = []
     var players: [Player] = []
     override func viewDidLoad() {
@@ -137,14 +150,52 @@ class ViewController: UIViewController {
                 player.name = "right"
             }
         }
+        
+        // add bid rotating instead of always starting with player
         for player in players {
             decideBid(player:player)
         }
+        bidSelector.delegate = self
+        bidSelector.dataSource = self
     } // end view load
     
-    
+    var playerBid = 0
+    var bid = 0
+    var trumpSuit = 1
+    @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
+        if playerBid == 0 {
+            let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
+            if bidText == "none"{
+                playerBid = 1
+            }else if bidText == "one mark"{
+                playerBid = 42
+            }else{
+                playerBid = Int(bidText) ?? 1
+            }
+            bidChoices = ["1","2","3","4","5","6"]
+            bidConfirm.setTitle("Select Trump", for: .normal)
+            bidSelector.reloadAllComponents()
+            if playerBid > bid {
+                bid = playerBid
+            }else{
+                bidSelector.isHidden = true
+                bidConfirm.isHidden = true
+            }
+        }else{
+            if playerBid > bid {
+                let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
+                trumpSuit = Int(bidText) ?? 1
+            }
+           bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
+            bidConfirm.setTitle("Place Bid", for: .normal)
+            bidSelector.reloadAllComponents()
+            bidSelector.isHidden = true
+            bidConfirm.isHidden = true
+        }
+    }
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
         let tapLocation = sender.location(in: arView)
+        print(tapLocation)
         if let playedDominoModel = arView.entity(at: tapLocation){
             for domino in dominos{
                 if domino.name == playedDominoModel.name {
@@ -168,9 +219,12 @@ class ViewController: UIViewController {
         }
     }
     func decideBid (player:Player){
+        print(player)
         if player.isUser {
-            
+            bidSelector.isHidden = false
+            bidConfirm.isHidden = false
         }
         // add logic for computer bidding
+        print(player.holdingDominos)
     }
 }
