@@ -14,8 +14,8 @@
             filePath = "AR 42/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "271"
-            endingLineNumber = "271"
+            startingLineNumber = "313"
+            endingLineNumber = "313"
             landmarkName = "decideBid(playerIndex:)"
             landmarkType = "7">
          </BreakpointContent>

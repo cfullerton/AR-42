@@ -13,14 +13,16 @@
 		6E07983B269F979E0045ED56 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E079839269F979E0045ED56 /* LaunchScreen.storyboard */; };
 		6E079846269F979E0045ED56 /* AR_42Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E079845269F979E0045ED56 /* AR_42Tests.swift */; };
 		6E079851269F979E0045ED56 /* AR_42UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E079850269F979E0045ED56 /* AR_42UITests.swift */; };
+		6E460CE426B6443B00E1B53F /* dom.scn in Resources */ = {isa = PBXBuildFile; fileRef = 6E460CE326B6443B00E1B53F /* dom.scn */; };
+		6E460CE626B6472A00E1B53F /* color.usda in Resources */ = {isa = PBXBuildFile; fileRef = 6E460CE526B6472A00E1B53F /* color.usda */; };
 		6E557D5426A0A9440001AA25 /* 6_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5326A0A9440001AA25 /* 6_6.usdz */; };
 		6E557D5626A0EB570001AA25 /* Domino.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5526A0EB570001AA25 /* Domino.usdz */; };
 		6E557D5826A100EE0001AA25 /* Dominos.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5726A100EE0001AA25 /* Dominos.usdz */; };
+		6E55E20D26B640C100FF5060 /* dom.usda in Resources */ = {isa = PBXBuildFile; fileRef = 6E55E20C26B640C100FF5060 /* dom.usda */; };
 		6E6CD743269FF11600806795 /* Domino.dae in Resources */ = {isa = PBXBuildFile; fileRef = 6E6CD742269FF11600806795 /* Domino.dae */; };
 		6E6CD745269FF29400806795 /* Domino.scn in Resources */ = {isa = PBXBuildFile; fileRef = 6E6CD744269FF29400806795 /* Domino.scn */; };
 		6E6CD75826A001CF00806795 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E6CD74C26A001CF00806795 /* AppDelegate.swift */; };
 		6E902FE726A24B0600269112 /* Dominos.scn in Resources */ = {isa = PBXBuildFile; fileRef = 6E902FE626A24B0600269112 /* Dominos.scn */; };
-		6E902FE926B0C82100269112 /* dom.usda in Resources */ = {isa = PBXBuildFile; fileRef = 6E902FE826B0C82100269112 /* dom.usda */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,9 +56,12 @@
 		6E07984C269F979E0045ED56 /* AR 42UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR 42UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E079850269F979E0045ED56 /* AR_42UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_42UITests.swift; sourceTree = "<group>"; };
 		6E079852269F979E0045ED56 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6E460CE326B6443B00E1B53F /* dom.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = dom.scn; sourceTree = "<group>"; };
+		6E460CE526B6472A00E1B53F /* color.usda */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = color.usda; sourceTree = "<group>"; };
 		6E557D5326A0A9440001AA25 /* 6_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = 6_6.usdz; sourceTree = "<group>"; };
 		6E557D5526A0EB570001AA25 /* Domino.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Domino.usdz; sourceTree = "<group>"; };
 		6E557D5726A100EE0001AA25 /* Dominos.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Dominos.usdz; sourceTree = "<group>"; };
+		6E55E20C26B640C100FF5060 /* dom.usda */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dom.usda; sourceTree = "<group>"; };
 		6E6CD742269FF11600806795 /* Domino.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = Domino.dae; sourceTree = "<group>"; };
 		6E6CD744269FF29400806795 /* Domino.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Domino.scn; sourceTree = "<group>"; };
 		6E6CD74A26A0017100806795 /* AR 42 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "AR 42"; sourceTree = "<group>"; };
@@ -69,7 +74,6 @@
 		6E6CD75626A001CF00806795 /* Domino.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = Domino.dae; sourceTree = "<group>"; };
 		6E6CD75726A001CF00806795 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E902FE626A24B0600269112 /* Dominos.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Dominos.scn; sourceTree = "<group>"; };
-		6E902FE826B0C82100269112 /* dom.usda */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dom.usda; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,8 +129,10 @@
 				6E6CD75526A001CF00806795 /* Info.plist */,
 				6E557D5526A0EB570001AA25 /* Domino.usdz */,
 				6E557D5726A100EE0001AA25 /* Dominos.usdz */,
-				6E902FE826B0C82100269112 /* dom.usda */,
+				6E460CE526B6472A00E1B53F /* color.usda */,
 				6E902FE626A24B0600269112 /* Dominos.scn */,
+				6E55E20C26B640C100FF5060 /* dom.usda */,
+				6E460CE326B6443B00E1B53F /* dom.scn */,
 				6E079830269F979D0045ED56 /* ViewController.swift */,
 				6E6CD74C26A001CF00806795 /* AppDelegate.swift */,
 				6E6CD75726A001CF00806795 /* Assets.xcassets */,
@@ -279,12 +285,14 @@
 				6E557D5826A100EE0001AA25 /* Dominos.usdz in Resources */,
 				6E07983B269F979E0045ED56 /* LaunchScreen.storyboard in Resources */,
 				6E557D5626A0EB570001AA25 /* Domino.usdz in Resources */,
+				6E460CE626B6472A00E1B53F /* color.usda in Resources */,
 				6E079838269F979E0045ED56 /* Assets.xcassets in Resources */,
 				6E6CD745269FF29400806795 /* Domino.scn in Resources */,
 				6E557D5426A0A9440001AA25 /* 6_6.usdz in Resources */,
 				6E902FE726A24B0600269112 /* Dominos.scn in Resources */,
 				6E079836269F979D0045ED56 /* Main.storyboard in Resources */,
-				6E902FE926B0C82100269112 /* dom.usda in Resources */,
+				6E55E20D26B640C100FF5060 /* dom.usda in Resources */,
+				6E460CE426B6443B00E1B53F /* dom.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,7 +27,16 @@ class Player {
 class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     @IBOutlet var usLabel: UILabel!
     @IBOutlet var themLabel: UILabel!
+    @IBOutlet var themMarksLabel: UILabel!
+    
+    @IBOutlet var trumpLabel: UILabel!
+    @IBOutlet var trumpValLabel: UILabel!
+    @IBOutlet var usMarksLabel: UILabel!
+    @IBOutlet var currentBidLabel: UILabel!
+    @IBOutlet var currentBidValLabel: UILabel!
     @IBOutlet var bidConfirm: UIButton!
+    @IBOutlet var usCollectionLabel: UILabel!
+    @IBOutlet var themCollectionLabel: UILabel!
     var bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -70,7 +79,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             newDomino.name = name
             newDomino.values = dominoDems[i]
             dominos.append(newDomino)
-            let dominoGroup = try! Entity.load(named: "dom.usda")
+            let dominoGroup = try! Entity.load(named: "color.usda")
             let dominoModel = dominoGroup.findEntity(named: name)
             dominoModel!.generateCollisionShapes(recursive: true)
             dominoModels.append(dominoModel!)
@@ -94,7 +103,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 z += 0.2
             }
             if (index > 13 && index < 21){
-                x -= 0.6
+                x -= 0.7
+                x -= x * 0.2
             }
             dominoModel.position = [x,-1,z]
             anchor.addChild(dominoModel)
@@ -156,10 +166,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
             
         }
-        
-        
-        
-        decideBid(playerIndex:0)
+        print("first",whosFirst)
+        decideBid(playerIndex: whosFirst)
         bidSelector.delegate = self
         bidSelector.dataSource = self
         
@@ -175,6 +183,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var currentSuit = 0
     var usScore = 0
     var ThemScore = 0
+    var whosFirst = 0
+    var usMarks = 0
+    var themMarks = 0
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
         var playerTrump = 7
         if playerBid == 0 {
@@ -190,14 +201,28 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             bidConfirm.setTitle("Select Trump", for: .normal)
             bidSelector.reloadAllComponents()
             // todo: test case where user doesn't bid first
-            if playerBid > bid {
+            if playerBid > bid && playerBid > 1 {
                 bid = playerBid
             }else{
                 bidSelector.isHidden = true
                 bidConfirm.isHidden = true
+                bids.append([0,playerBid,playerTrump])
+               bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
+                if bids.count < 4 {
+                    let newIndex = 1
+                    decideBid(playerIndex: newIndex)
+                }else {
+                    startGame()
+                }
+                bidConfirm.setTitle("Place Bid", for: .normal)
+                bidSelector.reloadAllComponents()
+                bidSelector.isHidden = true
+                bidConfirm.isHidden = true
+                currentBidLabel.isHidden = true
+                currentBidValLabel.isHidden = true
             }
         }else{
-            if playerBid > bid {
+            if playerBid >= bid && playerBid > 1 {
                 let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
                 bid = playerBid
                 playerTrump = Int(bidText) ?? 1
@@ -214,6 +239,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             bidSelector.reloadAllComponents()
             bidSelector.isHidden = true
             bidConfirm.isHidden = true
+            currentBidLabel.isHidden = true
+            currentBidValLabel.isHidden = true
         }
         
     }
@@ -242,22 +269,21 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 flipDownTransform.rotation *= simd_quatf(angle: -1.72, axis: [0,1,0])
                 dominoModel.move(to: flipDownTransform, relativeTo: dominoModel.parent)
                 let index = dominoModels.firstIndex{$0 === dominoModel}
-                print(domino.values,index)
                 var x:Float = 0.0
                 var z:Float = 0.0
-                if (index! > 6) {
-                    z = 0.3
+                if (index! < 7) {
+                    z += 0.4
                 }
                 if (index! > 20){
                     //good
-                    z -= 0.7
+                    z -= 0.6
                 }
                 if (index! > 6 && index! < 14){
-                    x -= 0.9
-                    z -= 0.2
+                    x -= 0.7
+                    //z -= 0.2
                 }
                 if (index! > 13 && index! < 21){
-                    x += 0.6
+                    x += 0.45
                 }
                 dominoModel.position.x += x
                 dominoModel.position.z += z
@@ -265,9 +291,25 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     func decideBid (playerIndex:Int){
+        print("playerIndex",playerIndex)
         if players[playerIndex].isUser {
             bidSelector.isHidden = false
             bidConfirm.isHidden = false
+            currentBidLabel.isHidden = false
+            currentBidValLabel.isHidden = false
+            if bids.count > 0 {
+                var bidText = ""
+                var bidValText = ""
+                for bidItem in bids {
+                    if bidItem[1] == 1 {
+                        bidValText = "pass"
+                    } else{
+                        bidValText = String(bidItem[1])
+                    }
+                    bidText += players[bidItem[0]].name + ":" + bidValText + ". "
+                }
+                currentBidValLabel.text = bidText
+            }
         } else{
             var computerTrump = 7 // no trump
             var computerBid = 0
@@ -325,6 +367,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             } else {
                 computerTrump = bestSuit[0]
             }
+            
             if confidence > 100 {
                 // todo: what if someone already bid 42
                 computerBid = 42
@@ -341,6 +384,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 bid = computerBid
             }
             bids.append([playerIndex,computerBid,computerTrump])
+            print(bids)
             if bids.count < 4 {
                 var newIndex = 0
                 if playerIndex == 3 {
@@ -359,14 +403,62 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if bidItem[1] == bid {
                 trump = bidItem[2]
                 startingPlayer = bidItem[0]
+                currentBidValLabel.text = players[bidItem[0]].name + " bid " + String(bid)
+                currentBidValLabel.isHidden = false
+                currentBidLabel.isHidden = true
+                currentBidValLabel.isHidden = true
+                trumpLabel.isHidden = false
+                var trumpText = ""
+                if trump == 7 {
+                    trumpText = "No Trump"
+                } else if trump == 0 {
+                    trumpText = "Blanks"
+                } else {
+                    trumpText = String(trump)
+                }
+                trumpValLabel.text = trumpText
+                trumpValLabel.isHidden = false
             }
         }
+        if bid < 30 {
+            bid = 30
+            startingPlayer = bids[3][0] // hammer
+            currentBidValLabel.text = players[bids[3][0]].name + " bid " + String(bid) + " (hammer)"
+        }
+        
         playTurn(playerNumber:startingPlayer)
     }
+    func startNewRound(){
+        //todo: add what happens when someone gets 7
+        playerBid = 0
+        bid = 0
+        bidwinner = 0
+        trump = 7
+        startingPlayer = 0
+        bids = []
+        dominosLayed = []
+        currentSuit = 0
+        usScore = 0
+        ThemScore = 0
+        dominos = []
+        dominoModels = []
+        usCollectionLabel.text = ""
+        themCollectionLabel.text = ""
+        usLabel.text = "0"
+        themLabel.text = "0"
+        trumpLabel.isHidden = true
+        trumpValLabel.isHidden = true
+        trumpValLabel.text = "No Trumo"
+        players = []
+        if whosFirst == 3 {
+            whosFirst = 0
+        } else {
+            whosFirst += 1
+        }
+        viewDidLoad()
+    }
     func playTurn(playerNumber:Int) {
-        // todo: add logic for a turn
         if dominosLayed.count == 4 {
-            // todo: add scoring
             var score = 1
             var trumpPlayed = false
             var highestTrump = 0
@@ -375,8 +467,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             let leadSuit = dominos[dominosLayed[0]].values.max()
             var highestFollow = 0
             var highestFollowerIndex = 0
+            var playedDominoText = ""
             for index in dominosLayed {
-                
+                playedDominoText += dominos[index].name.dropFirst(1) + " "
                 // check for points dominos
                 if dominos[index].values[0] + dominos[index].values[1] == 5 || dominos[index].values[0] + dominos[index].values[1] == 10 {
                     score += dominos[index].values[0] + dominos[index].values[1]
@@ -452,15 +545,20 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if winnerIndex == 0 || winnerIndex == 2 {
                 usScore += score
                 usLabel.text = String(usScore)
+                usCollectionLabel.text?.append(String(playedDominoText) + "\n")
             }else {
                 ThemScore += score
                 themLabel.text = String(ThemScore)
+                themCollectionLabel.text?.append(String(playedDominoText) + "\n")
             }
             
-            //todo: add round ending condition
-            
-            dominosLayed = []
-            playTurn(playerNumber: winnerIndex)
+            //todo: add round ending condition todo: add a concept of setting and making bid
+            if usScore + ThemScore == 42 {
+                startNewRound()
+            }else {
+                dominosLayed = []
+                playTurn(playerNumber: winnerIndex)
+            }
         } else {
             if playerNumber != 0 {
                 var dominoToPlay = 0
