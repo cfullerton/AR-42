@@ -218,7 +218,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 bidSelector.isHidden = true
                 bidConfirm.isHidden = true
                 currentBidLabel.isHidden = true
-                currentBidValLabel.isHidden = true
+                //currentBidValLabel.isHidden = true
             }
         }else{
             if playerBid >= bid && playerBid > 1 {
@@ -256,11 +256,16 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                             dominosLayed.append(dominos.firstIndex{$0 === domino}!)
                             playTurn(playerNumber: 1) // have the left player go after user
                         }else {
+                            print("player attempting off suit")
                             var hadSuitDomino = false
                             var suitAlerted = false
                             for domIndex in players[0].holdingDominos{
+                                print(!dominos[domIndex].isPlayed, dominos[domIndex].values.contains(currentSuit)
+                                        , !suitAlerted , bid >= 30 )
                                 if !dominos[domIndex].isPlayed && dominos[domIndex].values.contains(currentSuit)
-                                    && !suitAlerted && trump >= 30 {
+                                    && !suitAlerted && bid >= 30 {
+                                    print("suit alert")
+                                    //todo: suit alert not working
                                     let alert = UIAlertController(title: "Follow Suit", message: "You can follow suit", preferredStyle: .alert)
                                     alert.addAction(UIAlertAction(title: "Good Catch", style: .default, handler: nil))
                                     self.present(alert, animated: true)
@@ -276,6 +281,12 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                             }
                         }
                     }else {
+                        if dominos[dominos.firstIndex{$0 === domino}!].values[0] == trump ||
+                            dominos[dominos.firstIndex{$0 === domino}!].values[1] == trump {
+                            currentSuit = trump
+                        }else{
+                            currentSuit = dominos[dominos.firstIndex{$0 === domino}!].values.max()!
+                        }
                         playDomino(domino:domino)
                         domino.isPlayed = true
                         dominosLayed.append(dominos.firstIndex{$0 === domino}!)
@@ -424,7 +435,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     func startGame() {
-        print("bid",bid)
         for bidItem in bids {
             if bidItem[1] == bid {
                 trump = bidItem[2]
@@ -645,6 +655,12 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                         if dominosLayed.count == 0 { // todo: what if doesn't have double
                             if dominos[dominoIndex].values[0] == dominos[dominoIndex].values[1] { // if have double play it, todo: improve
                                 dominoToPlay = dominoIndex
+                                if dominos[dominoIndex].values[0] == trump ||
+                                    dominos[dominoIndex].values[1] == trump {
+                                    currentSuit = trump
+                                }else{
+                                    currentSuit = dominos[dominoIndex].values.max()!
+                                }
                                 dominoSelected = true
                             } // currently plays the last double found, todo: improve
                         
@@ -660,6 +676,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     for dominoIndex in players[playerNumber].holdingDominos {
                         if !dominos[dominoIndex].isPlayed {
                             dominoToPlay = dominoIndex
+                            if dominosLayed.count == 0 {
+                                if dominos[dominoIndex].values[0] == trump ||
+                                    dominos[dominoIndex].values[1] == trump {
+                                    currentSuit = trump
+                                }else{
+                                    currentSuit = dominos[dominoIndex].values.max()!
+                                }
+                            }
                         }
                     }
                 }
@@ -672,6 +696,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 }else{
                     playTurn(playerNumber: playerNumber + 1)
                 }
+            } else {
+                print("current suit",currentSuit)
             }
         }
     }
