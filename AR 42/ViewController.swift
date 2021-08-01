@@ -312,7 +312,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
         } else{
             var computerTrump = 7 // no trump
-            var computerBid = 0
+            var computerBid = 1
             var confidence = 0
             var doubles: [Int] = []
             var suitCount: [[Int]] = []
@@ -375,7 +375,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 if bid > 30 {
                     computerBid = bid + 1
                 }else {
-                    bid = 30
+                    computerBid = 30
                 }
             }else{
                 computerBid = 1
@@ -383,6 +383,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if computerBid > bid {
                 bid = computerBid
             }
+            print(playerIndex,"confidencce",confidence)
             bids.append([playerIndex,computerBid,computerTrump])
             print(bids)
             if bids.count < 4 {
@@ -399,6 +400,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     func startGame() {
+        print("bid",bid)
         for bidItem in bids {
             if bidItem[1] == bid {
                 trump = bidItem[2]
@@ -406,7 +408,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 currentBidValLabel.text = players[bidItem[0]].name + " bid " + String(bid)
                 currentBidValLabel.isHidden = false
                 currentBidLabel.isHidden = true
-                currentBidValLabel.isHidden = true
                 trumpLabel.isHidden = false
                 var trumpText = ""
                 if trump == 7 {
@@ -421,11 +422,13 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
         }
         if bid < 30 {
+            print("hammer")
             bid = 30
             startingPlayer = bids[3][0] // hammer
             currentBidValLabel.text = players[bids[3][0]].name + " bid " + String(bid) + " (hammer)"
+            currentBidValLabel.isHidden = false
         }
-        
+        print("startingplayer",startingPlayer)
         playTurn(playerNumber:startingPlayer)
     }
     func startNewRound(){
