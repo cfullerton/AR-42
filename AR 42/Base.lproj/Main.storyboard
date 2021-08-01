@@ -55,6 +55,20 @@
                                     <action selector="onClick:forEvent:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uoU-TT-GaR"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x44-dj-0c0">
+                                <rect key="frame" x="20" y="79" width="34" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9i-tT-nW8">
+                                <rect key="frame" x="321" y="79" width="37" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="VVu-FG-OM4"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -63,6 +77,8 @@
                         <outlet property="arView" destination="7t8-LM-rmP" id="jsF-w4-we5"/>
                         <outlet property="bidConfirm" destination="ZLO-pE-HWk" id="GNh-Gv-hQZ"/>
                         <outlet property="bidSelector" destination="MXn-5r-Fv2" id="Ktx-8j-xLT"/>
+                        <outlet property="themLabel" destination="a9i-tT-nW8" id="rC5-PD-Lag"/>
+                        <outlet property="usLabel" destination="x44-dj-0c0" id="GEE-Vi-lt6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

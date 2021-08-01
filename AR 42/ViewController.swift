@@ -25,6 +25,8 @@ class Player {
 
 
 class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+    @IBOutlet var usLabel: UILabel!
+    @IBOutlet var themLabel: UILabel!
     @IBOutlet var bidConfirm: UIButton!
     var bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -74,7 +76,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             dominoModels.append(dominoModel!)
         }
         
-        dominoModels.shuffle()
         for (index, dominoModel) in dominoModels.enumerated() {
             
             var x = Float(index % 3)
@@ -161,6 +162,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         decideBid(playerIndex:0)
         bidSelector.delegate = self
         bidSelector.dataSource = self
+        
     } // end view load
     // put these somewhere better, like in an object
     var playerBid = 0
@@ -169,7 +171,10 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var trump = 7
     var startingPlayer = 0
     var bids: [[Int]] = []
-    var dominosLayed = 0
+    var dominosLayed: [Int] = []
+    var currentSuit = 0
+    var usScore = 0
+    var ThemScore = 0
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
         var playerTrump = 7
         if playerBid == 0 {
@@ -196,11 +201,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
                 bid = playerBid
                 playerTrump = Int(bidText) ?? 1
-                print(playerTrump)
             }
             bids.append([0,playerBid,playerTrump])
-            print(playerTrump)
-            print(bids)
            bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
             if bids.count < 4 {
                 let newIndex = 1
@@ -216,15 +218,19 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         
     }
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
+        // currently lets the player go at any time and cheat todo: fix
         let tapLocation = sender.location(in: arView)
-        print(tapLocation)
         if let playedDominoModel = arView.entity(at: tapLocation){
             for domino in dominos{
                 if domino.name == playedDominoModel.name {
                     playDomino(domino:domino)
+                    domino.isPlayed = true
+                    // send to the next player's turn
+                    dominosLayed.append(dominos.firstIndex{$0 === domino}!)
                 }
             }
             
+            playTurn(playerNumber: 1) // have the left player go after user
             
         }
     }
@@ -233,15 +239,32 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if dominoModel.name == domino.name{
                 var flipDownTransform = dominoModel.transform
                 flipDownTransform.rotation = simd_quatf(angle: 1.72, axis: [0,0,1])
-                flipDownTransform.rotation *= simd_quatf(angle: 90, axis: [1,0,0])
+                flipDownTransform.rotation *= simd_quatf(angle: -1.72, axis: [0,1,0])
                 dominoModel.move(to: flipDownTransform, relativeTo: dominoModel.parent)
-                dominoModel.position.x += 0.15
-                dominoModel.position.y += 0.15
+                let index = dominoModels.firstIndex{$0 === dominoModel}
+                print(domino.values,index)
+                var x:Float = 0.0
+                var z:Float = 0.0
+                if (index! > 6) {
+                    z = 0.3
+                }
+                if (index! > 20){
+                    //good
+                    z -= 0.7
+                }
+                if (index! > 6 && index! < 14){
+                    x -= 0.9
+                    z -= 0.2
+                }
+                if (index! > 13 && index! < 21){
+                    x += 0.6
+                }
+                dominoModel.position.x += x
+                dominoModel.position.z += z
             }
         }
     }
     func decideBid (playerIndex:Int){
-        print(playerIndex)
         if players[playerIndex].isUser {
             bidSelector.isHidden = false
             bidConfirm.isHidden = false
@@ -332,7 +355,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
     }
     func startGame() {
-        print(bid,bids)
         for bidItem in bids {
             if bidItem[1] == bid {
                 trump = bidItem[2]
@@ -343,14 +365,138 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     func playTurn(playerNumber:Int) {
         // todo: add logic for a turn
-        dominosLayed += 1
-        if dominosLayed == 4 {
-            //score and remove domninos
-        }else {
-            if playerNumber == 3 {
-                playTurn(playerNumber: 0)
-            }else{
-                playTurn(playerNumber: playerNumber + 1)
+        if dominosLayed.count == 4 {
+            // todo: add scoring
+            var score = 1
+            var trumpPlayed = false
+            var highestTrump = 0
+            var higestTrumpUser = 4 //above the index of users
+            var winnerIndex = 0
+            let leadSuit = dominos[dominosLayed[0]].values.max()
+            var highestFollow = 0
+            var highestFollowerIndex = 0
+            for index in dominosLayed {
+                
+                // check for points dominos
+                if dominos[index].values[0] + dominos[index].values[1] == 5 || dominos[index].values[0] + dominos[index].values[1] == 10 {
+                    score += dominos[index].values[0] + dominos[index].values[1]
+                }
+                
+                //check for trump dominos played
+                if dominos[index].values.contains(trump){
+                    trumpPlayed = true
+                    var offIndex = 0
+                    // checks for double trump
+                    if dominos[index].values[0] == trump && dominos[index].values[1] == trump {
+                        highestTrump = 7
+                        //todo: change to a playerIsHoldingDomino function
+                        for player in players {
+                            if player.holdingDominos.contains(index){
+                                higestTrumpUser = players.firstIndex{$0 === player}!
+                            }
+                        }
+                    } else {
+                        if dominos[index].values[0] == trump{
+                            offIndex = 1
+                        }
+                        if dominos[index].values[offIndex] >= highestTrump {
+                            highestTrump = dominos[index].values[offIndex]
+                            //todo: change to a playerIsHoldingDomino function
+                            for player in players {
+                                if player.holdingDominos.contains(index){
+                                    higestTrumpUser = players.firstIndex{$0 === player}!
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if dominos[index].values.contains(leadSuit!){
+                        var offIndex = 0
+                        if dominos[index].values[0] == leadSuit && dominos[index].values[1] == leadSuit {
+                            highestFollow = 7
+                            //todo: change to a playerIsHoldingDomino function
+                            for player in players {
+                                if player.holdingDominos.contains(index){
+                                    highestFollowerIndex = players.firstIndex{$0 === player}!
+                                }
+                            }
+                        } else {
+                            if dominos[index].values[0] == leadSuit{
+                                offIndex = 1
+                            }
+                            if dominos[index].values[offIndex] >= highestFollow {
+                                highestFollow = dominos[index].values[offIndex]
+                                //todo: change to a playerIsHoldingDomino function
+                                for player in players {
+                                    if player.holdingDominos.contains(index){
+                                        highestFollowerIndex = players.firstIndex{$0 === player}!
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // removes the models for the played dominos
+                for model in dominoModels {
+                    if model.name == dominos[index].name {
+                        model.removeFromParent()
+                    }
+                }
+            }
+            if trumpPlayed {
+                winnerIndex = higestTrumpUser
+            } else {
+                winnerIndex = highestFollowerIndex
+            }
+            // sets adds to the score of the winers
+            if winnerIndex == 0 || winnerIndex == 2 {
+                usScore += score
+                usLabel.text = String(usScore)
+            }else {
+                ThemScore += score
+                themLabel.text = String(ThemScore)
+            }
+            
+            //todo: add round ending condition
+            
+            dominosLayed = []
+            playTurn(playerNumber: winnerIndex)
+        } else {
+            if playerNumber != 0 {
+                var dominoToPlay = 0
+                var dominoSelected = false
+                for dominoIndex in players[playerNumber].holdingDominos {
+                    if !dominos[dominoIndex].isPlayed {
+                        if dominosLayed.count == 0 {
+                            if dominos[dominoIndex].values[0] == dominos[dominoIndex].values[1] { // if have double play it, todo: improve
+                                dominoToPlay = dominoIndex
+                                dominoSelected = true
+                            } // currently plays the last double found, todo: improve
+                        
+                        } else {
+                            if dominos[dominoIndex].values[0] == currentSuit || dominos[dominoIndex].values[1] == currentSuit {
+                                dominoToPlay = dominoIndex
+                                dominoSelected = true
+                            } // currently plays the last legal domino, fix
+                        }
+                    }
+                }
+                if dominoSelected == false { // todo: change to trash or points
+                    for dominoIndex in players[playerNumber].holdingDominos {
+                        if !dominos[dominoIndex].isPlayed {
+                            dominoToPlay = dominoIndex
+                        }
+                    }
+                }
+                playDomino(domino: dominos[dominoToPlay])
+                dominos[dominoToPlay].isPlayed = true
+                // send to the next player's turn
+                dominosLayed.append(dominoToPlay)
+                if playerNumber == 3 {
+                    playTurn(playerNumber: 0)
+                }else{
+                    playTurn(playerNumber: playerNumber + 1)
+                }
             }
         }
     }
