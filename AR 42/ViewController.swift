@@ -28,7 +28,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     @IBOutlet var usLabel: UILabel!
     @IBOutlet var themLabel: UILabel!
     @IBOutlet var themMarksLabel: UILabel!
-    
     @IBOutlet var trumpLabel: UILabel!
     @IBOutlet var trumpValLabel: UILabel!
     @IBOutlet var usMarksLabel: UILabel!
@@ -166,7 +165,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
             
         }
-        print("first",whosFirst)
         decideBid(playerIndex: whosFirst)
         bidSelector.delegate = self
         bidSelector.dataSource = self
@@ -186,6 +184,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var whosFirst = 0
     var usMarks = 0
     var themMarks = 0
+
     @IBAction func onClick(_ sender: UIButton, forEvent event: UIEvent){
         var playerTrump = 7
         if playerBid == 0 {
@@ -200,7 +199,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             bidChoices = ["1","2","3","4","5","6"]
             bidConfirm.setTitle("Select Trump", for: .normal)
             bidSelector.reloadAllComponents()
-            // todo: test case where user doesn't bid first
+
             if playerBid > bid && playerBid > 1 {
                 bid = playerBid
             }else{
@@ -244,21 +243,46 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
         
     }
+    // todo: add trump as leading suit
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
-        // currently lets the player go at any time and cheat todo: fix
         let tapLocation = sender.location(in: arView)
         if let playedDominoModel = arView.entity(at: tapLocation){
             for domino in dominos{
                 if domino.name == playedDominoModel.name {
-                    playDomino(domino:domino)
-                    domino.isPlayed = true
-                    // send to the next player's turn
-                    dominosLayed.append(dominos.firstIndex{$0 === domino}!)
+                    if dominosLayed.count > 0 {
+                        if domino.values.contains(currentSuit){
+                            playDomino(domino:domino)
+                            domino.isPlayed = true
+                            dominosLayed.append(dominos.firstIndex{$0 === domino}!)
+                            playTurn(playerNumber: 1) // have the left player go after user
+                        }else {
+                            var hadSuitDomino = false
+                            var suitAlerted = false
+                            for domIndex in players[0].holdingDominos{
+                                if !dominos[domIndex].isPlayed && dominos[domIndex].values.contains(currentSuit)
+                                    && !suitAlerted && trump >= 30 {
+                                    let alert = UIAlertController(title: "Follow Suit", message: "You can follow suit", preferredStyle: .alert)
+                                    alert.addAction(UIAlertAction(title: "Good Catch", style: .default, handler: nil))
+                                    self.present(alert, animated: true)
+                                    hadSuitDomino = true
+                                    suitAlerted = true
+                                }
+                            }
+                            if !hadSuitDomino {
+                                playDomino(domino:domino)
+                                domino.isPlayed = true
+                                dominosLayed.append(dominos.firstIndex{$0 === domino}!)
+                                playTurn(playerNumber: 1) // have the left player go after user
+                            }
+                        }
+                    }else {
+                        playDomino(domino:domino)
+                        domino.isPlayed = true
+                        dominosLayed.append(dominos.firstIndex{$0 === domino}!)
+                        playTurn(playerNumber: 1) // have the left player go after user
+                    }
                 }
             }
-            
-            playTurn(playerNumber: 1) // have the left player go after user
-            
         }
     }
     func playDomino (domino:Domino){
@@ -372,7 +396,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 // todo: what if someone already bid 42
                 computerBid = 42
             } else if confidence > 50 {
-                if bid > 30 {
+                if bid >= 30 {
                     computerBid = bid + 1
                 }else {
                     computerBid = 30
@@ -429,10 +453,11 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             currentBidValLabel.isHidden = false
         }
         print("startingplayer",startingPlayer)
+        bidwinner = startingPlayer
         playTurn(playerNumber:startingPlayer)
     }
     func startNewRound(){
-        //todo: add what happens when someone gets 7
+        //todo: add what happens when someone gets 7 marks
         playerBid = 0
         bid = 0
         bidwinner = 0
@@ -554,21 +579,70 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 themLabel.text = String(ThemScore)
                 themCollectionLabel.text?.append(String(playedDominoText) + "\n")
             }
-            
-            //todo: add round ending condition todo: add a concept of setting and making bid
-            if usScore + ThemScore == 42 {
+            // checks for round ending conditions
+            var setScore = 0
+            if bidwinner == 0 || bidwinner == 2 {
+                setScore = ThemScore
+            }else {
+                setScore = usScore
+            }
+            if usScore + ThemScore == 42 || 42 - setScore < bid || usScore >= bid || ThemScore >= bid {
+                var roundWinText = ""
+                var ackText = "Awesome"
+                if bidwinner == 0 || bidwinner == 2 {
+                    if usScore >= bid {
+                        usMarks += 1
+                        usMarksLabel.text = String(usMarks)
+                        roundWinText = "We"
+                    }else {
+                        themMarks += 1
+                        themMarksLabel.text = String(themMarks)
+                        roundWinText = "They"
+                        ackText = "Bummer"
+                    }
+                }else {
+                    if ThemScore >= bid {
+                        themMarks += 1
+                        themMarksLabel.text = String(themMarks)
+                        roundWinText = "They"
+                        ackText = "Bummer"
+                    }else {
+                        usMarks += 1
+                        usMarksLabel.text = String(usMarks)
+                        roundWinText = "We"
+                    }
+                }
+                let alert = UIAlertController(title: "Round Won", message: roundWinText + " won the round", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: ackText, style: .default, handler: nil))
+                self.present(alert, animated: true)
+                for domino in dominos {
+                    if !domino.isPlayed {
+                        playDomino(domino: domino)
+                    }
+                }
+                for domino in dominos {
+                    if !domino.isPlayed {
+                        domino.isPlayed = true
+                        for model in dominoModels {
+                            if model.name == domino.name {
+                                model.removeFromParent()
+                            }
+                        }
+                    }
+                }
                 startNewRound()
             }else {
                 dominosLayed = []
                 playTurn(playerNumber: winnerIndex)
             }
-        } else {
+        } else { // if not time to score
             if playerNumber != 0 {
                 var dominoToPlay = 0
                 var dominoSelected = false
                 for dominoIndex in players[playerNumber].holdingDominos {
+                    // todo: inform leading suit
                     if !dominos[dominoIndex].isPlayed {
-                        if dominosLayed.count == 0 {
+                        if dominosLayed.count == 0 { // todo: what if doesn't have double
                             if dominos[dominoIndex].values[0] == dominos[dominoIndex].values[1] { // if have double play it, todo: improve
                                 dominoToPlay = dominoIndex
                                 dominoSelected = true
