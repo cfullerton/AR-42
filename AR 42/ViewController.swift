@@ -196,7 +196,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }else{
                 playerBid = Int(bidText) ?? 1
             }
-            bidChoices = ["1","2","3","4","5","6"]
+            bidChoices = ["no trump","blank","1","2","3","4","5","6"]
             bidConfirm.setTitle("Select Trump", for: .normal)
             bidSelector.reloadAllComponents()
 
@@ -224,7 +224,13 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if playerBid >= bid && playerBid > 1 {
                 let bidText = bidChoices[bidSelector.selectedRow(inComponent: 0)]
                 bid = playerBid
-                playerTrump = Int(bidText) ?? 1
+                if bidText == "blank" {
+                    playerTrump = 0
+                }else if bidText == "no trump"{
+                    playerTrump = 7
+                }else {
+                    playerTrump = Int(bidText) ?? 1
+                }
             }
             bids.append([0,playerBid,playerTrump])
            bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
@@ -247,6 +253,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     @IBAction func onTap(_ sender: UITapGestureRecognizer) {
         let tapLocation = sender.location(in: arView)
         if let playedDominoModel = arView.entity(at: tapLocation){
+            let impact = UIImpactFeedbackGenerator()
+            impact.impactOccurred()
             for domino in dominos{
                 if domino.name == playedDominoModel.name {
                     if dominosLayed.count > 0 {
@@ -256,12 +264,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                             dominosLayed.append(dominos.firstIndex{$0 === domino}!)
                             playTurn(playerNumber: 1) // have the left player go after user
                         }else {
-                            print("player attempting off suit")
                             var hadSuitDomino = false
                             var suitAlerted = false
                             for domIndex in players[0].holdingDominos{
-                                print(!dominos[domIndex].isPlayed, dominos[domIndex].values.contains(currentSuit)
-                                        , !suitAlerted , bid >= 30 )
                                 if !dominos[domIndex].isPlayed && dominos[domIndex].values.contains(currentSuit)
                                     && !suitAlerted && bid >= 30 {
                                     print("suit alert")
@@ -567,10 +572,13 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                         }
                     }
                 }
-                // removes the models for the played dominos
-                for model in dominoModels {
-                    if model.name == dominos[index].name {
-                        model.removeFromParent()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
+                    // removes the models for the played dominos
+                    for model in dominoModels {
+                        if model.name == dominos[index].name {
+                            model.removeFromParent()
+                        }
                     }
                 }
             }
@@ -630,20 +638,25 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                         playDomino(domino: domino)
                     }
                 }
-                for domino in dominos {
-                    if !domino.isPlayed {
-                        domino.isPlayed = true
-                        for model in dominoModels {
-                            if model.name == domino.name {
-                                model.removeFromParent()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [self] in
+                    for domino in dominos {
+                        if !domino.isPlayed {
+                            domino.isPlayed = true
+                            for model in dominoModels {
+                                if model.name == domino.name {
+                                    model.removeFromParent()
+                                }
                             }
                         }
                     }
+                    startNewRound()
                 }
-                startNewRound()
-            }else {
-                dominosLayed = []
-                playTurn(playerNumber: winnerIndex)
+                
+            }else { // next hand in same round
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
+                    dominosLayed = []
+                    playTurn(playerNumber: winnerIndex)
+                }
             }
         } else { // if not time to score
             if playerNumber != 0 {
@@ -696,7 +709,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 }else{
                     playTurn(playerNumber: playerNumber + 1)
                 }
-            } else {
+            } else { // is users turn
                 print("current suit",currentSuit)
             }
         }
