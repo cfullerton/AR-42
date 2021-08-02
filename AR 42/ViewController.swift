@@ -36,6 +36,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     @IBOutlet var bidConfirm: UIButton!
     @IBOutlet var usCollectionLabel: UILabel!
     @IBOutlet var themCollectionLabel: UILabel!
+    var utils = Utils()
     var bidChoices = ["none","30","31","32","33","34","35","36","37","38","39","40","41","one mark"]
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -53,21 +54,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var dominoModels: [Entity] = []
     var players: [Player] = []
     override func viewDidLoad() {
-        var dominoDems: [[Int]] = []
-        
-        //generate an array of all dominos
-        var suit = 0, off = 0
-        while suit < 7 {
-            
-            if off <= suit {
-                dominoDems.append([suit,off])
-                off += 1
-            }else{
-                suit += 1
-                off = 0
-            }
-        }
+        var dominoDems = utils.genDems()
         dominoDems.shuffle()
+        
         super.viewDidLoad()
         let anchor = AnchorEntity(plane: .horizontal)
         arView.scene.addAnchor(anchor)
@@ -86,26 +75,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         
         for (index, dominoModel) in dominoModels.enumerated() {
             
-            var x = Float(index % 3)
-            var z = Float(index / 3)
-            x = x * 0.4
-            z = z * 0.2
-            z -= 2
-            if (index > 6) {
-                //z += 0.3
-            }
-            if (index > 20){
-                z += 0.3
-            }
-            if (index > 6 && index < 14){
-                x += 0.9
-                z += 0.2
-            }
-            if (index > 13 && index < 21){
-                x -= 0.7
-                x -= x * 0.2
-            }
-            dominoModel.position = [x,-1,z]
+            let initPos = utils.initPos(index: index)
+            dominoModel.position = [initPos[0],-1,initPos[1]]
             anchor.addChild(dominoModel)
             //rotate the dominos vertical
             var sideTransform = dominoModel.transform
@@ -245,7 +216,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             bidSelector.isHidden = true
             bidConfirm.isHidden = true
             currentBidLabel.isHidden = true
-            currentBidValLabel.isHidden = true
+            //currentBidValLabel.isHidden = true
         }
         
     }
@@ -351,80 +322,11 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 currentBidValLabel.text = bidText
             }
         } else{
-            var computerTrump = 7 // no trump
-            var computerBid = 1
-            var confidence = 0
-            var doubles: [Int] = []
-            var suitCount: [[Int]] = []
-            for i in 0...6 {
-                suitCount.append([i,0])
+            let bidDecision = BidDecision(player: players[playerIndex], dominos: dominos, currentBid: bid)
+            if bidDecision.bidChoice > bid {
+                bid = bidDecision.bidChoice
             }
-            for dominoIndex in players[playerIndex].holdingDominos{
-                let dominoValues = dominos[dominoIndex].name.split(separator: "_").compactMap { Int($0) }
-                if dominoValues[0] == dominoValues[1] {
-                    doubles.append(dominoValues[0])
-                }
-                for i in 0...6 {
-                    if dominoValues.contains(suitCount[i][0]) {
-                        suitCount[i][1] += 1
-                    }
-                }
-            }
-            var bestSuit = [0,0]
-            var bestSuitCount = 0
-            for suit in suitCount {
-                if suit[1] > bestSuitCount {
-                    bestSuit = suit
-                    bestSuitCount = suit[1]
-                }
-            }
-            if doubles.contains(bestSuit[0]) { // if they have the double of their best
-                confidence += 20
-            }
-            if bestSuitCount > 3 { // if they have at least 4 of the same suit
-                confidence += 20
-            }
-            if bestSuit[0] > 3 { // if it is a a high suit
-                confidence += 10
-            }
-            if bestSuit[1] + doubles.count > 5 { // they only have one off domino
-                confidence += 30
-            }
-            if doubles.contains(6){
-                confidence += 10
-            }
-            if doubles.contains(5) {
-                confidence += 10
-            }
-            if doubles.count > 4 { // 4 doubles
-                confidence += 30
-            }
-            if doubles.count > 6 { // all doubles
-                confidence += 100
-                computerTrump = 7
-            } else if doubles.count > 4 && bestSuit[1] < 4 {
-                    computerTrump = 7
-            } else {
-                computerTrump = bestSuit[0]
-            }
-            
-            if confidence > 100 {
-                // todo: what if someone already bid 42
-                computerBid = 42
-            } else if confidence > 50 {
-                if bid >= 30 {
-                    computerBid = bid + 1
-                }else {
-                    computerBid = 30
-                }
-            }else{
-                computerBid = 1
-            }
-            if computerBid > bid {
-                bid = computerBid
-            }
-            print(playerIndex,"confidencce",confidence)
-            bids.append([playerIndex,computerBid,computerTrump])
+            bids.append([playerIndex,bidDecision.bidChoice,bidDecision.trumpChoice])
             print(bids)
             if bids.count < 4 {
                 var newIndex = 0
@@ -525,24 +427,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     // checks for double trump
                     if dominos[index].values[0] == trump && dominos[index].values[1] == trump {
                         highestTrump = 7
-                        //todo: change to a playerIsHoldingDomino function
-                        for player in players {
-                            if player.holdingDominos.contains(index){
-                                higestTrumpUser = players.firstIndex{$0 === player}!
-                            }
-                        }
+                        higestTrumpUser = utils.whoPlayedDomino(players: players,index: index)
                     } else {
                         if dominos[index].values[0] == trump{
                             offIndex = 1
                         }
                         if dominos[index].values[offIndex] >= highestTrump {
                             highestTrump = dominos[index].values[offIndex]
-                            //todo: change to a playerIsHoldingDomino function
-                            for player in players {
-                                if player.holdingDominos.contains(index){
-                                    higestTrumpUser = players.firstIndex{$0 === player}!
-                                }
-                            }
+                            higestTrumpUser = utils.whoPlayedDomino(players: players,index: index)
                         }
                     }
                 } else {
@@ -551,11 +443,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                         if dominos[index].values[0] == leadSuit && dominos[index].values[1] == leadSuit {
                             highestFollow = 7
                             //todo: change to a playerIsHoldingDomino function
-                            for player in players {
-                                if player.holdingDominos.contains(index){
-                                    highestFollowerIndex = players.firstIndex{$0 === player}!
-                                }
-                            }
+                            highestFollowerIndex = utils.whoPlayedDomino(players: players,index: index)
                         } else {
                             if dominos[index].values[0] == leadSuit{
                                 offIndex = 1
@@ -563,11 +451,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                             if dominos[index].values[offIndex] >= highestFollow {
                                 highestFollow = dominos[index].values[offIndex]
                                 //todo: change to a playerIsHoldingDomino function
-                                for player in players {
-                                    if player.holdingDominos.contains(index){
-                                        highestFollowerIndex = players.firstIndex{$0 === player}!
-                                    }
-                                }
+                                highestFollowerIndex = utils.whoPlayedDomino(players: players,index: index)
                             }
                         }
                     }
