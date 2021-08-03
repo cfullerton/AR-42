@@ -9,21 +9,6 @@ import UIKit
 import RealityKit
 import SceneKit.ModelIO
 
-class Domino {
-    var values: [Int] = []
-    var name: String = ""
-    var isPlayed = false
-}
-
-class Player {
-    var isUser: Bool = false
-    var holdingDominos: [Int]  = []
-    var didBid = false
-    var bidValue = 0
-    var name = ""
-}
-
-
 class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     @IBOutlet var usLabel: UILabel!
     @IBOutlet var themLabel: UILabel!
@@ -61,13 +46,11 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         let anchor = AnchorEntity(plane: .horizontal)
         arView.scene.addAnchor(anchor)
         
+        let dominoGroup = try! Entity.load(named: "color.usda")
         for i in 0...27 {
             let name = "_" + String(dominoDems[i][0]) + "_" + String(dominoDems[i][1])
-            let newDomino = Domino()
-            newDomino.name = name
-            newDomino.values = dominoDems[i]
+            let newDomino = Domino(nameString: name, dem: dominoDems[i])
             dominos.append(newDomino)
-            let dominoGroup = try! Entity.load(named: "color.usda")
             let dominoModel = dominoGroup.findEntity(named: name)
             dominoModel!.generateCollisionShapes(recursive: true)
             dominoModels.append(dominoModel!)
@@ -101,40 +84,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             }
         }
         for i in 0...3{
-            if i == 0 {
-                var player = Player()
-                player.isUser = true
-                for j in 21...27 {
-                    player.holdingDominos.append(j)
-                }
-                player.name = "user"
-                players.append(player)
-            } else if i == 1 {
-                var player = Player()
-                player.isUser = false
-                for j in 14...20 {
-                    player.holdingDominos.append(j)
-                }
-                player.name = "left"
-                players.append(player)
-            } else if i == 2 {
-                var player = Player()
-                player.isUser = false
-                for j in 0...6 {
-                    player.holdingDominos.append(j)
-                }
-                player.name = "across"
-                players.append(player)
-            } else if i == 3 {
-                var player = Player()
-                player.isUser = false
-                for j in 7...13 {
-                    player.holdingDominos.append(j)
-                }
-                player.name = "right"
-                players.append(player)
-            }
-            
+            var player = Player(i:i)
+            players.append(player)
         }
         decideBid(playerIndex: whosFirst)
         bidSelector.delegate = self

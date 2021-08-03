@@ -17,6 +17,8 @@
 		6E460CE626B6472A00E1B53F /* color.usda in Resources */ = {isa = PBXBuildFile; fileRef = 6E460CE526B6472A00E1B53F /* color.usda */; };
 		6E460CE826B7A21300E1B53F /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CE726B7A21200E1B53F /* utils.swift */; };
 		6E460CEA26B7AA6E00E1B53F /* bid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CE926B7AA6E00E1B53F /* bid.swift */; };
+		6E460CEC26B8E85B00E1B53F /* player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CEB26B8E85B00E1B53F /* player.swift */; };
+		6E460CF026B8EB2700E1B53F /* domino.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CEF26B8EB2700E1B53F /* domino.swift */; };
 		6E557D5426A0A9440001AA25 /* 6_6.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5326A0A9440001AA25 /* 6_6.usdz */; };
 		6E557D5626A0EB570001AA25 /* Domino.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5526A0EB570001AA25 /* Domino.usdz */; };
 		6E557D5826A100EE0001AA25 /* Dominos.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5726A100EE0001AA25 /* Dominos.usdz */; };
@@ -62,6 +64,8 @@
 		6E460CE526B6472A00E1B53F /* color.usda */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = color.usda; sourceTree = "<group>"; };
 		6E460CE726B7A21200E1B53F /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		6E460CE926B7AA6E00E1B53F /* bid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bid.swift; sourceTree = "<group>"; };
+		6E460CEB26B8E85B00E1B53F /* player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = player.swift; sourceTree = "<group>"; };
+		6E460CEF26B8EB2700E1B53F /* domino.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = domino.swift; sourceTree = "<group>"; };
 		6E557D5326A0A9440001AA25 /* 6_6.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = 6_6.usdz; sourceTree = "<group>"; };
 		6E557D5526A0EB570001AA25 /* Domino.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Domino.usdz; sourceTree = "<group>"; };
 		6E557D5726A100EE0001AA25 /* Dominos.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Dominos.usdz; sourceTree = "<group>"; };
@@ -153,6 +157,8 @@
 				6E07983C269F979E0045ED56 /* Info.plist */,
 				6E460CE726B7A21200E1B53F /* utils.swift */,
 				6E460CE926B7AA6E00E1B53F /* bid.swift */,
+				6E460CEB26B8E85B00E1B53F /* player.swift */,
+				6E460CEF26B8EB2700E1B53F /* domino.swift */,
 			);
 			path = "AR 42";
 			sourceTree = "<group>";
@@ -326,7 +332,9 @@
 				6E460CE826B7A21300E1B53F /* utils.swift in Sources */,
 				6E6CD75826A001CF00806795 /* AppDelegate.swift in Sources */,
 				6E079831269F979D0045ED56 /* ViewController.swift in Sources */,
+				6E460CEC26B8E85B00E1B53F /* player.swift in Sources */,
 				6E460CEA26B7AA6E00E1B53F /* bid.swift in Sources */,
+				6E460CF026B8EB2700E1B53F /* domino.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
