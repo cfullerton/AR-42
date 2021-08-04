@@ -37,10 +37,16 @@ public class Utils {
             z += 0.3
         }
         if (index > 6 && index < 14){
+            if [9,12].contains(index){
+                x += 0.2
+            }
             x += 0.9
             z += 0.2
         }
         if (index > 13 && index < 21){
+            if [14,17,20].contains(index){
+                x -= 0.2
+            }
             x -= 0.7
             x -= x * 0.2
         }

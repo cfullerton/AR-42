@@ -29,18 +29,37 @@ class Domino {
                 var x:Float = 0.0
                 var z:Float = 0.0
                 if (index! < 7) {
-                    z += 0.4
+                    //tested
+                    z += 0.5
+                    if [0,3,6].contains(index){
+                        x += 0.2
+                    }else if [2,5].contains(index){
+                        x -= 0.2
+                    }
                 }
                 if (index! > 20){
                     //good
                     z -= 0.6
                 }
                 if (index! > 6 && index! < 14){
-                    x -= 0.7
+                    if [9,12].contains(index){
+                        x+=0.2
+                    }else if [8,11].contains(index){
+                        x-=0.5
+                    }
+                    x -= 0.5
                     //z -= 0.2
                 }
                 if (index! > 13 && index! < 21){
-                    x += 0.45
+                    if [14,17,20].contains(index){
+                        x -= 0.4
+                    }else{
+                        x += 0.19
+                    }
+                    if [16,19].contains(index){
+                        x-=0.12
+                    }
+                    x += 0.4
                 }
                 dominoModel.position.x += x
                 dominoModel.position.z += z

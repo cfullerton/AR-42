@@ -93,6 +93,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         decideBid(playerIndex: gs.whosFirst)
         bidSelector.delegate = self
         bidSelector.dataSource = self
+//        for i in 14...20{
+//            print(i,dominos[i].values)
+//            if [14,17,20].contains(i){
+//               
+//            }else{
+//                dominos[i].playDomino(models: dominoModels)
+//            }
+//        }
         
     } // end view load
     var gs = GameState()
