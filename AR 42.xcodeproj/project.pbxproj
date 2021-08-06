@@ -21,7 +21,6 @@
 		6E460CF226B8EF0600E1B53F /* gameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CF126B8EF0600E1B53F /* gameState.swift */; };
 		6E460CF426B8FD9700E1B53F /* finish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CF326B8FD9700E1B53F /* finish.swift */; };
 		6E460CF626B906C400E1B53F /* computerPlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E460CF526B906C400E1B53F /* computerPlay.swift */; };
-		6E557D5626A0EB570001AA25 /* Domino.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6E557D5526A0EB570001AA25 /* Domino.usdz */; };
 		6E55E20D26B640C100FF5060 /* dom.usda in Resources */ = {isa = PBXBuildFile; fileRef = 6E55E20C26B640C100FF5060 /* dom.usda */; };
 		6E6CD75826A001CF00806795 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E6CD74C26A001CF00806795 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -65,7 +64,6 @@
 		6E460CF126B8EF0600E1B53F /* gameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gameState.swift; sourceTree = "<group>"; };
 		6E460CF326B8FD9700E1B53F /* finish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = finish.swift; sourceTree = "<group>"; };
 		6E460CF526B906C400E1B53F /* computerPlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = computerPlay.swift; sourceTree = "<group>"; };
-		6E557D5526A0EB570001AA25 /* Domino.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Domino.usdz; sourceTree = "<group>"; };
 		6E55E20C26B640C100FF5060 /* dom.usda */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dom.usda; sourceTree = "<group>"; };
 		6E6CD74A26A0017100806795 /* AR 42 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "AR 42"; sourceTree = "<group>"; };
 		6E6CD74C26A001CF00806795 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 			children = (
 				6E07982E269F979D0045ED56 /* AppDelegate.swift */,
 				6E6CD75526A001CF00806795 /* Info.plist */,
-				6E557D5526A0EB570001AA25 /* Domino.usdz */,
 				6E460CE526B6472A00E1B53F /* color.usda */,
 				6E55E20C26B640C100FF5060 /* dom.usda */,
 				6E079830269F979D0045ED56 /* ViewController.swift */,
@@ -281,7 +278,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E07983B269F979E0045ED56 /* LaunchScreen.storyboard in Resources */,
-				6E557D5626A0EB570001AA25 /* Domino.usdz in Resources */,
 				6E460CE626B6472A00E1B53F /* color.usda in Resources */,
 				6E079838269F979E0045ED56 /* Assets.xcassets in Resources */,
 				6E079836269F979D0045ED56 /* Main.storyboard in Resources */,

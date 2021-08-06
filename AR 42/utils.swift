@@ -54,7 +54,6 @@ public class Utils {
     }
     
     func whoPlayedDomino(players:[Player],index:Int) -> Int {
-        //todo: check that setting this isn't harmful
         var playerIndex = 4
         for player in players {
             if player.holdingDominos.contains(index){
@@ -63,5 +62,79 @@ public class Utils {
         }
         return playerIndex
     }
-    
+    func partnerIndex(playerIndex:Int) -> Int{
+        var partner = 0
+        if playerIndex == 0{
+            partner = 2
+        } else if playerIndex == 1{
+            partner = 3
+        } else if playerIndex == 2{
+            partner = 0
+        } else if playerIndex == 3{
+            partner = 1
+        }
+        return partner
+    }
+    func partnerWinning(playerIndex:Int,gs:GameState,dominos:[Domino],utils:Utils,players:[Player]) -> Bool {
+        var trumpPlayed = false
+        var highestTrump = 0
+        var higestTrumpUser = 4 //above the index of users
+        let leadSuit = dominos[gs.dominosLayed[0]].values.max()
+        var highestFollow = 0
+        var highestFollowerIndex = 0
+        var partnerWinning = false
+        var topTrumpIsHighest = false
+        let partner = partnerIndex(playerIndex: playerIndex)
+        for index in gs.dominosLayed {
+            //check for trump dominos played
+            if dominos[index].isTrump(gs: gs){
+                trumpPlayed = true
+                var offIndex = 0
+                if dominos[index].isDouble() {
+                    highestTrump = 7
+                    higestTrumpUser = utils.whoPlayedDomino(players: players,index: index)
+                    topTrumpIsHighest = true
+                } else {
+                    if dominos[index].values[0] == gs.trump{
+                        offIndex = 1
+                    }
+                    if dominos[index].values[offIndex] >= highestTrump {
+                        highestTrump = dominos[index].values[offIndex]
+                        higestTrumpUser = utils.whoPlayedDomino(players: players,index: index)
+                        if dominos[index].isHighestRemainingTrump(gs: gs, dominos: dominos){
+                            topTrumpIsHighest = true
+                        }
+                    }
+                }
+            } else {
+                if dominos[index].values.contains(leadSuit!){
+                    var offIndex = 0
+                    if dominos[index].values[0] == leadSuit && dominos[index].values[1] == leadSuit {
+                        highestFollow = 7
+                        highestFollowerIndex = utils.whoPlayedDomino(players: players,index: index)
+                    } else {
+                        if dominos[index].values[0] == leadSuit{
+                            offIndex = 1
+                        }
+                        if dominos[index].values[offIndex] >= highestFollow {
+                            highestFollow = dominos[index].values[offIndex]
+                            highestFollowerIndex = utils.whoPlayedDomino(players: players,index: index)
+                        }
+                    }
+                }
+            }
+        }
+        if trumpPlayed {
+            if higestTrumpUser == partner {
+                if gs.dominosLayed.count > 2 || topTrumpIsHighest {
+                    partnerWinning = true
+                }
+            }
+        } else {
+            if highestFollowerIndex == partner && gs.dominosLayed.count > 2 {
+                partnerWinning = true
+            }
+        }
+        return partnerWinning // could add more logic like who followed suit etc
+    }
 }

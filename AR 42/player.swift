@@ -45,4 +45,15 @@ class Player {
             name = "right"
         }
     }
+    func firstStillHolding(dominos:[Domino]) -> Int {
+        var firstStillHolding = 0
+        var stillHoldingFound = false
+        for dom in holdingDominos{
+            if !dominos[dom].isPlayed && !stillHoldingFound{
+                firstStillHolding = dom
+                stillHoldingFound = true
+            }
+        }
+        return firstStillHolding
+    }
 }

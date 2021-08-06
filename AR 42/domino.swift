@@ -18,6 +18,53 @@ class Domino {
         name = nameString
         values = dem
     }
+    func isDouble() -> Bool{
+        return values[0] == values[1]
+    }
+    func isTrump(gs:GameState) -> Bool{
+        return values[0] == gs.trump || values[1] == gs.trump
+    }
+    func isPointsDomino() -> Bool{
+        return values[0] + values[1] == 5 || values[0] + values[1] == 10
+    }
+    func points() -> Int {
+        var pointValue = 0
+        if isPointsDomino(){
+            pointValue = values[0] + values[1]
+        }
+        return pointValue
+    }
+    func isHighestRemainingTrump(gs:GameState,dominos:[Domino]) -> Bool {
+        var higherTrumpStillOut = false
+        if isTrump(gs: gs){
+            var myOff = 0
+            if values[0] == gs.trump{
+                myOff = values[1]
+            }else{
+                myOff = values[0]
+            }
+            var trumpsPlayed:[Int] = []
+            for playedDomino in dominos{ // finds what trumps have been played
+                if playedDomino.isPlayed{
+                    if playedDomino.isTrump(gs:gs){
+                        if playedDomino.values[0] == gs.trump{
+                            trumpsPlayed.append(playedDomino.values[1])
+                        }else{
+                            trumpsPlayed.append(playedDomino.values[0])
+                        }
+                    }
+                }
+            }
+            var countdown = 6
+            while countdown > myOff && !higherTrumpStillOut {
+                if !trumpsPlayed.contains(countdown){
+                    higherTrumpStillOut = true
+                }
+                countdown -= 1
+            }
+        }
+        return !higherTrumpStillOut
+    }
     func playDomino (models:[Entity]){
         for dominoModel in models{
             if dominoModel.name == name{
